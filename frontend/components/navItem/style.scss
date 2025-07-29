@@ -1,0 +1,40 @@
+// Example template for config.ts
+@use "../../styles/sass/abstracts/variables" as *;
+.nav-link {
+  //   list-style: none;
+  position: relative;
+  text-decoration: none;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  display: flex; 
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  transition: all 0.4s ease ;
+
+  // &::after {
+  //   content: "";
+  //   position: absolute;
+  //   // opacity: 0;
+  //   bottom: 0.3rem; // فاصله از پایین متن
+  //   left: 0;
+  //   width: 100%;
+  //   height: 2px;
+  //   background-color: $color-primary;
+  //   transform: scaleX(0);
+  //   transform-origin: left;
+  //   transition: transform 0.3s ease;
+  //   top: 36px;
+  // }
+
+  &:hover::after {
+   
+  }
+
+  &:hover {
+    color: $color-primary;
+    transform: scale(1.2);
+  }
+}

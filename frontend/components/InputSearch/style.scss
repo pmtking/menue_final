@@ -1,0 +1,63 @@
+@use '../../styles/sass/abstracts/variables' as *;
+.input_search {
+  display: flex;
+  // opacity: 0;
+  // border: 1px solid #aaa ;
+  outline: none;
+  transform: scale(0.8);
+  transition: all 0.3s ease;
+  background: #202133;
+  padding-inline: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+  // width: 100%;
+}
+
+/* وقتی فرم فعال میشه */
+.input_search.active {
+  display: flex;
+  // animation: open 0.3s ease forwards;
+  border: none;
+  outline: none;
+}
+.icon {
+  background: $color-primary;
+  height: 100%;
+  width: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  margin-right: -11px;
+  // box-shadow: 0px 0px 10px 10px rgba($color-primary , 0.3);
+  cursor: pointer;
+}
+
+/* وقتی فرم غیرفعال میشه */
+.input_search.closing {
+  animation: close 0.3s ease forwards;
+}
+
+/* انیمیشن باز شدن */
+@keyframes open {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* انیمیشن بسته شدن */
+@keyframes close {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}

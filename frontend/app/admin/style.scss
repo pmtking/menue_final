@@ -1,0 +1,12 @@
+@use "../../styles/sass/abstracts/variables" as *;
+.cart {
+  transition: all 0.4s ease;
+
+  &:hover {
+    border: 1px solid $color-primary;
+    background: rgba($color-primary, 0.2);
+  }
+  &.active {
+    background: rgba($color-primary, 0.2);
+  }
+}

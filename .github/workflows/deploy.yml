@@ -1,0 +1,31 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - main # یا هر برنچی که برای دیپلوی استفاده می‌کنی
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: 171.22.26.36
+          username: root
+          key: ${{ secrets.PROD_SSH_KEY }}
+          script: |
+            if [ ! -d "/opt/app" ]; then
+              echo "First time setup: Cloning repo..."
+              git clone git@github.com:YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git /opt/app
+            else
+              echo "Repo exists. Pulling latest changes..."
+              cd /opt/app
+              git pull origin main
+            fi
+
+            cd /opt/app
+            docker compose down
+            docker compose up -d --build
