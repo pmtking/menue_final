@@ -19,13 +19,12 @@ jobs:
           script: |
             if [ ! -d "/opt/app" ]; then
               echo "First time setup: Cloning repo..."
-              git clone git@github.com:pmtking/menue_final.git /opt/app
-            else
+              git clone git@github.com:pmtking/menue_final.git 
               echo "Repo exists. Pulling latest changes..."
               cd /opt/app
               git pull origin main
             fi
 
-            cd /opt/app
+            cd menue_final
             docker compose down
             docker compose up -d --build
