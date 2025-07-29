@@ -19,7 +19,7 @@ jobs:
           script: |
             if [ ! -d "/opt/app" ]; then
               echo "First time setup: Cloning repo..."
-              git clone git@github.com:YOUR_GITHUB_USERNAME/YOUR_REPO_NAME.git /opt/app
+              git clone git@github.com:pmtking/menue_final.git /opt/app
             else
               echo "Repo exists. Pulling latest changes..."
               cd /opt/app
