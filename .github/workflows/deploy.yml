@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - main # یا هر برنچی که برای دیپلوی استفاده می‌کنی
+      - main  # یا هر برنچی که برای دیپلوی استفاده می‌کنی
 
 jobs:
   deploy:
@@ -13,18 +13,19 @@ jobs:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.0
         with:
-          host: 171.22.26.36
+          host: YOUR.SERVER.IP
           username: root
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
             if [ ! -d "/opt/app" ]; then
               echo "First time setup: Cloning repo..."
-              git clone git@github.com:pmtking/menue_final.git 
+              git clone https://github.com/pmtking/menue_final.git /opt/app
+            else
               echo "Repo exists. Pulling latest changes..."
               cd /opt/app
               git pull origin main
             fi
 
-            cd menue_final
+            cd /opt/app
             docker compose down
             docker compose up -d --build
