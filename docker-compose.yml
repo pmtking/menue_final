@@ -4,21 +4,31 @@ services:
   frontend:
     build: ./frontend
     ports:
-      - "5173:5173"
+      - "5173:5173"   # فرانت روی پورت 5173 بیرون بازه
     volumes:
       - ./frontend:/app
     command: npm run dev
-    #restart: always
+    environment:
+      - HOST=0.0.0.0
+      - PORT=5173
+    restart: always
 
   backend:
     build: ./backend
-    ports:
-      - "8080:8080"
+    depends_on:
+      - mongo
     volumes:
       - ./backend:/app
     command: npm start
-    depends_on:
-      - frontend
     environment:
-      - MONGO_URL=mongodb://localhost:27017/menue
-    #restart: always
+      - MONGO_URL=mongodb://mongo:27017/menue
+    restart: always
+
+  mongo:
+    image: mongo:6
+    volumes:
+      - mongo_data:/data/db
+    restart: always
+
+volumes:
+  mongo_data:
