@@ -9,6 +9,5 @@ services:
       - .:/app
     command: npm start
     environment:
-      # - MONGO_URL=mongodb://host.docker.internal:27017/menue  # اگر روی ویندوز یا مک هستی
-      - MONGO_URL=mongodb://localhost:27017/menue            # اگر روی لینوکس هستی
+      - MONGO_URL=mongodb://localhost:27017/menue
     restart: always
