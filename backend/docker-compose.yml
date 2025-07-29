@@ -5,20 +5,8 @@ services:
     build: .
     ports:
       - "3000:3000"
-    depends_on:
-      - mongo
     volumes:
       - .:/app
     restart: always
-
-  mongo:
-    image: mongo:6
-    container_name: mongodb
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongo_data:/data/db
-    restart: always
-
-volumes:
-  mongo_data:
+    environment:
+      - MONGO_URL=mongodb://host.docker.internal:27017/menue  # یا اگر لینوکس هست: mongodb://localhost:27017/menue
