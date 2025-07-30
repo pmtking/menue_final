@@ -21,7 +21,8 @@ const AdminRegisterPage = () => {
         await register({
             number: number, // فرض بر این است که شماره تماس به عنوان ایمیل استفاده می‌شود
             password: password ,
-            role:'ADMIN'
+            role:'ADMIN',
+            name
         });
     };
 
