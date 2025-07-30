@@ -1,8 +1,8 @@
-services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "80:5173"
-    volumes:
-      - ./frontend:/app
-    command: npm run dev -- --port 5173 --host 0.0.0.0
+frontend:
+  build: ./frontend
+  ports:
+    - "3000:3000"
+  environment:
+    - NODE_ENV=production
+  depends_on:
+    - backend
