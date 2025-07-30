@@ -1,10 +1,9 @@
-import { NextConfig } from "next";
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  // گزینه‌های معتبر اینجا باشن
+  output: 'standalone',
+  reactStrictMode: true,
+  // ...
+}
 
-// next.config.ts
-const nextConfig: NextConfig = {
-  config: {
-    turbopack: true,
-  },
-};
-
-export default nextConfig;
+module.exports = nextConfig
