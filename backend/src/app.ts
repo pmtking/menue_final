@@ -6,7 +6,18 @@ import { router } from "./router";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 export const app = express();
-app.use(corse());
+const allowedOrigins = ['http://localhost:3000', 'http://171.22.26.36:8080/'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}))
 const cors = require("cors");
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
