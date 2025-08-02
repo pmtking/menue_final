@@ -6,7 +6,7 @@ WORKDIR /app
 # فقط package.json و lock رو کپی کن برای کش بهتر
 COPY package*.json ./
 
-RUN npm ci
+RUN npm ci --legacy-peer-deps
 
 # کپی کل پروژه
 COPY . .
