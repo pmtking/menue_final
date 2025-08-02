@@ -1,6 +1,6 @@
 import express from "express";
 import { mongoConnected } from "./db";
-import corse from "cors";
+import cors from 'cors';
 import { dotenvConfig } from "./config/dotenv";
 import { router } from "./router";
 import path, { dirname } from "path";
@@ -10,7 +10,7 @@ const allowedOrigins = ['http://localhost:3000', 'http://171.22.26.36:8080/'];
 
 app.use(cors({
   origin: function (origin, callback) {
-    if (allowedOrigins.includes(origin)) {
+    if (allowedOrigins.includes(origin as string)) {
       callback(null, true);
     } else {
       callback(new Error('Not allowed by CORS'));
@@ -18,8 +18,8 @@ app.use(cors({
   },
   credentials: true
 }))
-const cors = require("cors");
-app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
+
 app.use(express.json());
 app.use("/uploads", express.static(path.join(__dirname, "public/uploads")));
 dotenvConfig();
