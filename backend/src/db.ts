@@ -5,7 +5,7 @@ dotenvConfig();
 export const mongoConnected = () => {
     
   mongoose
-    .connect(process.env.MONGO_URI!)
+    .connect(process.env.MONGO_URI! || 'mongodb://localhost:27017/menue')
     .then(() => {
       console.log("✅ mongoo is connected ");
     })

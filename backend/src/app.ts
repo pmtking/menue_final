@@ -17,8 +17,8 @@ app.use("/api", router);
 export const startServer = async () => {
   try {
     mongoConnected();
-    app.listen(process.env.PORT);
-    console.log("🚀 server is runnig");
+    app.listen(process.env.PORT || 8080);
+    console.log("🚀 server is runnig" , process.env.PORT);
   } catch (error) {
     console.log("err");
   }
