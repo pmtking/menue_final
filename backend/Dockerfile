@@ -1,14 +1,12 @@
 FROM node:18
 
-WORKDIR /src
+WORKDIR /app
 
 COPY package*.json ./
-# RUN npm install
+RUN npm install
 
 COPY . .
 
 EXPOSE 8080
 
-# CMD ["node", "index.js"]
-# یا اگر از nodemon استفاده می‌کنی:
-CMD ["npm","start"]
+CMD ["npm", "start"]

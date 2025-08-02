@@ -3,7 +3,7 @@ name: Deploy to Server
 on:
   push:
     branches:
-      - main # یا هر برنچی که برای دیپلوی استفاده می‌کنی
+      - main
 
 jobs:
   deploy:
@@ -11,12 +11,13 @@ jobs:
 
     steps:
       - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.0
+        uses: appleboy/ssh-action@v0.1.7
         with:
           host: 171.22.26.36
           username: root
           key: ${{ secrets.PROD_SSH_KEY }}
           script: |
+            set -e
             if [ ! -d "/opt/app" ]; then
               echo "First time setup: Cloning repo..."
               git clone https://github.com/pmtking/menue_final.git /opt/app
@@ -27,5 +28,10 @@ jobs:
             fi
 
             cd /opt/app
+            echo "Stopping existing containers..."
             docker compose down
+
+            echo "Starting containers with build..."
             docker compose up -d --build
+
+            echo "Deployment finished."
