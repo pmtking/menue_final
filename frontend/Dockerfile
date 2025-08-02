@@ -1,18 +1,31 @@
-FROM node:18 as build
+# مرحله اول: نصب وابستگی‌ها و بیلد پروژه
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
+# فقط package.json و lock رو کپی کن برای کش بهتر
 COPY package*.json ./
-RUN npm install
 
+RUN npm ci
+
+# کپی کل پروژه
 COPY . .
 
+# بیلد پروژه (ایجاد نسخه production)
 RUN npm run build
 
-FROM nginx:alpine
+# مرحله دوم: ساخت ایمیج نهایی برای اجرا
+FROM node:18-alpine
 
-COPY --from=build /app/build /usr/share/nginx/html
+WORKDIR /app
 
-EXPOSE 80
+# فقط فایل‌های ضروری از مرحله builder کپی میشن
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/package.json ./package.json
 
-CMD ["nginx", "-g", "daemon off;"]
+EXPOSE 3000
+
+# اجرای سرور production
+CMD ["npm", "start"]
