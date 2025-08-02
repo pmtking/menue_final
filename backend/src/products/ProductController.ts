@@ -12,10 +12,13 @@ interface ProductsType {
 const AddProductController = async (req: Request, res: Response) => {
   try {
     const { name, price, descriptions, category } = req.body;
-    const file = req.file;
+    const multerReq = req as Request & { file?: Express.Multer.File };
+    const file = multerReq.file;
 
     if (!name || !price || !descriptions || !file) {
-      return res.status(400).json({ message: "همه فیلدها از جمله تصویر الزامی هستند" });
+      return res
+        .status(400)
+        .json({ message: "همه فیلدها از جمله تصویر الزامی هستند" });
     }
 
     const imagePath = `/uploads/${file.filename}`; // مسیر عکس
@@ -25,7 +28,7 @@ const AddProductController = async (req: Request, res: Response) => {
       price,
       descriptions,
       category,
-      imagePath,  // حتما اینجا مقدار imagePath بفرست
+      imagePath, // حتما اینجا مقدار imagePath بفرست
     });
 
     return res.status(201).json({
@@ -37,6 +40,5 @@ const AddProductController = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "خطای سرور" });
   }
 };
-
 
 export default AddProductController;
