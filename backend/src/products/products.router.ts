@@ -1,9 +1,19 @@
-import express from 'express'
-import AddProductController from './ProductController';
-import upload from '../middlewares/upload';
+import express from "express";
 
-const productRouter = express.Router()
+import upload from "../middlewares/upload";
+import AddProductController, {
+  DeleteProductsController,
+  GetProducController,
+  ShowProductsController,
+  UpdateProductsController,
+} from "./ProductController";
 
-productRouter.post('/add' ,upload.single("image") , AddProductController)
+const productRouter = express.Router();
 
-export default productRouter ;
+productRouter.post("/add", upload.single("image"), AddProductController);
+productRouter.get("/show", ShowProductsController);
+productRouter.delete("/delete/:id", DeleteProductsController);
+productRouter.put("/update/:id", upload.single("image"), UpdateProductsController);
+productRouter.get('/get/:id' , GetProducController )
+
+export default productRouter;

@@ -1,10 +1,11 @@
 "use client";
 import Button from "@/components/Button/page";
 import api from "@/libs/axios";
-import React, { useState } from "react";
+import { useParams } from "next/navigation";
+import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
-const AddProduct = () => {
+const UpdateproductsPage = () => {
   const [formData, setFormData] = useState({
     name: "",
     price: "",
@@ -15,6 +16,8 @@ const AddProduct = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const params = useParams();
+  const productId = params?.id;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -34,39 +37,26 @@ const AddProduct = () => {
     setError("");
     setSuccess(false);
 
-    if (!formData.image) {
-      toast.error("لطفاً یک تصویر برای محصول انتخاب کنید.");
-      setLoading(false);
-      return;
-    }
-
     const payload = new FormData();
     payload.append("name", formData.name);
     payload.append("price", formData.price);
-    payload.append("descriptions", formData.description);
-    payload.append("image", formData.image);
-    payload.append("category", formData.name);
+    payload.append("description", formData.description);
+    if (formData.image) {
+      payload.append("image", formData.image);
+    }
 
     try {
-      const res = await api.post("/api/product/add", payload, {
+      const res = await api.put(`/api/product/update/${productId}`, payload, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
 
-      toast.success("✅ محصول با موفقیت ثبت شد");
+      toast.success("✅ محصول با موفقیت ویرایش شد");
       setSuccess(true);
-
-      // پاک‌سازی فرم
-      setFormData({
-        name: "",
-        price: "",
-        description: "",
-        image: null,
-      });
     } catch (err: any) {
       const msg =
-        err.response?.data?.message || "❌ خطایی در ثبت محصول رخ داد";
+        err.response?.data?.message || "❌ خطایی در ویرایش محصول رخ داد";
       toast.error(msg);
       setError(msg);
     } finally {
@@ -74,9 +64,31 @@ const AddProduct = () => {
     }
   };
 
+  const findData = async () => {
+    if (!productId) return toast.error("شناسه محصول یافت نشد");
+
+    try {
+      const { data } = await api.get(`/api/product/get/${productId}`);
+      if (!data?.data) return toast.error("محصولی یافت نشد");
+
+      setFormData({
+        name: data.data.name || "",
+        price: data.data.price?.toString() || "",
+        description: data.data.description || "",
+        image: null,
+      });
+    } catch {
+      toast.error("خطا در دریافت اطلاعات محصول");
+    }
+  };
+
+  useEffect(() => {
+    findData();
+  }, [productId]);
+
   return (
-    <div className="w-full max-w-md mx-auto mt-6 px-4 sm:px-6 md:px-8 py-6 bg-white/10 rounded-xl shadow-lg rtl font-sans">
-      <h2 className="text-2xl font-bold mb-6 text-center">افزودن محصول جدید</h2>
+    <div className="w-full max-w-md mx-auto mt-6 px-4 py-6 bg-white/10 rounded-xl shadow-lg rtl font-sans">
+      <h2 className="text-2xl font-bold mb-6 text-center">ویرایش محصول</h2>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <label className="flex flex-col font-medium">
@@ -86,9 +98,8 @@ const AddProduct = () => {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="نام محصول را وارد کنید"
             required
-            className="mt-2 px-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="mt-2 px-4 py-2 border rounded-lg"
           />
         </label>
 
@@ -99,10 +110,9 @@ const AddProduct = () => {
             name="price"
             value={formData.price}
             onChange={handleChange}
-            placeholder="قیمت محصول را وارد کنید"
             required
             min="0"
-            className="mt-2 px-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="mt-2 px-4 py-2 border rounded-lg"
           />
         </label>
 
@@ -112,14 +122,13 @@ const AddProduct = () => {
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="توضیحاتی درباره محصول"
             rows={4}
-            className="mt-2 px-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y"
+            className="mt-2 px-4 py-2 border rounded-lg resize-y"
           />
         </label>
 
         <label className="flex flex-col font-medium">
-          تصویر محصول
+          تصویر جدید (اختیاری)
           <input
             type="file"
             accept="image/*"
@@ -135,11 +144,11 @@ const AddProduct = () => {
 
         {loading && <p className="text-blue-600">در حال ارسال...</p>}
         {error && <p className="text-red-500">{error}</p>}
-        {success && <p className="text-green-600">محصول ثبت شد 🎉</p>}
+        {success && <p className="text-green-600">محصول ویرایش شد 🎉</p>}
 
         <Button
           type="submit"
-          name={loading ? "در حال ارسال..." : "افزودن محصول"}
+          name={loading ? "در حال ارسال..." : "ویرایش محصول"}
           className={`mt-4 w-full ${
             loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
           } text-white py-3 rounded-lg font-semibold transition-colors`}
@@ -150,4 +159,4 @@ const AddProduct = () => {
   );
 };
 
-export default AddProduct;
+export default UpdateproductsPage;

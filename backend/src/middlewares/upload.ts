@@ -4,7 +4,7 @@ import path from "path";
 // تنظیمات ذخیره فایل
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/uploads/"); // مسیر ذخیره تصاویر
+    cb(null, "src/public/uploads"); // مسیر ذخیره تصاویر
   },
   filename: (req, file, cb) => {
     const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9);

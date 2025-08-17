@@ -5,8 +5,11 @@ import axios, {
 } from "axios";
 import { getCookie, setCookie, deleteCookie } from "cookies-next";
 const COOKIE_NAME = "userToken";
+
+const BASE_URL = 'http://171.22.26.36:8080/' 
+const BASE_URL1 = 'http://localhost:8080/' 
 const api = axios.create({
-  baseURL: "http://171.22.26.36:8080/",
+  baseURL: BASE_URL1,
   timeout: 1000,
   headers: {
     "Content-Type": "application/json",
