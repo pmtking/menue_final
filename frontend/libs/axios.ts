@@ -9,7 +9,7 @@ const COOKIE_NAME = "userToken";
 const BASE_URL = 'http://171.22.26.36:8080/' 
 const BASE_URL1 = 'http://localhost:8080/' 
 const api = axios.create({
-  baseURL: BASE_URL1,
+  baseURL: BASE_URL,
   timeout: 1000,
   headers: {
     "Content-Type": "application/json",
