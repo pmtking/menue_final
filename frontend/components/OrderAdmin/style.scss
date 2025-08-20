@@ -107,8 +107,18 @@
 .order-item {
   display: flex;
   justify-content: space-between;
+  width: 100%;
   align-items: center;
   font-size: 12px;
   padding: 4px 0;
   border-bottom: 1px dashed #ccc;
+}
+
+.delete{
+  background:red;
+  padding: 5px 10px;
+  border-radius: 5px;
+  display: flex ;
+  justify-content: center;
+  align-items: center;
 }

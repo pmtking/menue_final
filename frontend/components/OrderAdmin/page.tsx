@@ -41,7 +41,7 @@ const OrderAdmin: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [count, setCount] = useState<number>(1);
 
-  const tables: TableInfo[] = Array.from({ length: 8 }, (_, i) => ({
+  const tables: TableInfo[] = Array.from({ length: 17 }, (_, i) => ({
     id: i + 1,
     status: ["empty", "occupied", "reserved"][i % 3] as TableStatus,
   }));
@@ -173,7 +173,7 @@ const OrderAdmin: React.FC = () => {
                   <div key={idx} className="order-item">
                     <span>{item.name}</span>
                     <span>{item.count} × {item.price.toLocaleString()} تومان</span>
-                    <button onClick={() => handleRemoveItem(idx)} className="btn delete">✖</button>
+                    <button onClick={() => handleRemoveItem(idx)} className=" delete">✖</button>
                   </div>
                 ))}
                 <hr />

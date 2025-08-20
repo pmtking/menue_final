@@ -1,6 +1,7 @@
 .navbar {
-  // border: 1px solid #535151;
-  padding-block: 8px;
-  padding-inline: 16px;
-  border-radius: 12px;
+  position: fixed;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999; // بالاتر از همه
 }
