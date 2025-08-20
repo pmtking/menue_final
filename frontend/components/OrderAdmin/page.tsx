@@ -3,6 +3,11 @@ import React, { useState } from "react";
 import "./style.scss";
 import TabelCard from "../TabelCard/page";
 
+interface Product {
+  name: string;
+  price: number;
+}
+
 interface OrderItem {
   name: string;
   count: number;
@@ -21,77 +26,59 @@ interface TableInfo {
   status: TableStatus;
 }
 
+const products: Product[] = [
+  { name: "کباب", price: 120000 },
+  { name: "نوشابه", price: 15000 },
+  { name: "برنج", price: 40000 },
+  { name: "سالاد", price: 25000 },
+  { name: "دوغ", price: 18000 },
+];
+
 const OrderAdmin: React.FC = () => {
-  const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
+  const [orders, setOrders] = useState<Map<number, OrderData>>(new Map());
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [count, setCount] = useState<number>(1);
 
   const tables: TableInfo[] = Array.from({ length: 8 }, (_, i) => ({
     id: i + 1,
     status: ["empty", "occupied", "reserved"][i % 3] as TableStatus,
   }));
 
-  const handleCreateOrder = () => {
-    if (!selectedTableId) return;
+  const filteredProducts = products.filter((p) =>
+    p.name.includes(searchTerm.trim())
+  );
 
-    const sampleOrder: OrderData = {
+  const selectedOrder = selectedTableId ? orders.get(selectedTableId) || null : null;
+
+  const handleAddItemToOrder = () => {
+    if (!selectedTableId || !selectedProduct || count < 1) return;
+
+    const currentOrder = orders.get(selectedTableId) || {
       tableId: selectedTableId,
-      items: [
-        { name: "کباب", count: 2, price: 120000 },
-        { name: "نوشابه", count: 3, price: 15000 },
-        { name: "برنج", count: 1, price: 40000 },
-      ],
+      items: [],
     };
 
-    setSelectedOrder(sampleOrder);
-  };
+    const newItem: OrderItem = {
+      name: selectedProduct.name,
+      count,
+      price: selectedProduct.price,
+    };
 
-  const handlePrint = () => {
-    if (!selectedOrder) return;
+    const updatedOrder: OrderData = {
+      ...currentOrder,
+      items: [...currentOrder.items, newItem],
+    };
 
-    const content = `
-شماره میز: ${selectedOrder.tableId}
-${selectedOrder.items
-      .map((item) => `${item.name} - ${item.count}×${item.price.toLocaleString()} تومان`)
-      .join("\n")}
---------------------
-مجموع: ${selectedOrder.items.reduce((sum, item) => sum + item.price * item.count, 0).toLocaleString()} تومان
-`;
+    const updatedOrders = new Map(orders);
+    updatedOrders.set(selectedTableId, updatedOrder);
+    setOrders(updatedOrders);
 
-    const printWindow = window.open("", "_blank");
-    if (printWindow) {
-      printWindow.document.write(`
-        <html>
-          <head>
-            <style>
-              body {
-                margin: 0;
-                padding: 0;
-                font-family: "Tahoma", sans-serif;
-                font-size: 10px;
-                line-height: 1.1;
-                width: 200px;
-              }
-              pre {
-                margin: 0;
-                white-space: pre-wrap;
-              }
-              hr {
-                border: none;
-                border-top: 1px dashed #000;
-                margin: 2px 0;
-              }
-            </style>
-          </head>
-          <body>
-            <pre>${content}</pre>
-          </body>
-        </html>
-      `);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
-      printWindow.close();
-    }
+    // Reset form
+    setSelectedProduct(null);
+    setCount(1);
+    setSearchTerm("");
   };
 
   return (
@@ -102,48 +89,82 @@ ${selectedOrder.items
             key={table.id}
             tableId={table.id}
             status={table.status}
-            onSelect={() => {
-              setSelectedTableId(table.id);
-              setSelectedOrder(null);
-            }}
+            onSelect={() => setSelectedTableId(table.id)}
             isSelected={selectedTableId === table.id}
           />
         ))}
       </div>
 
       <div className="order-panel">
-        <h3>فیش سفارش</h3>
+        <h3>سفارش میز</h3>
 
-        {selectedOrder ? (
-          <div className="receipt-preview" style={{ fontFamily: "Tahoma", fontSize: "12px", lineHeight: 1.3 }}>
-            <p>شماره میز: {selectedOrder.tableId}</p>
-            <hr />
-            {selectedOrder.items.map((item, idx) => (
-              <p key={idx}>
-                {item.name} - {item.count} × {item.price.toLocaleString()} تومان
-              </p>
-            ))}
-            <hr />
-            <p>
-              مجموع:{" "}
-              {selectedOrder.items
-                .reduce((sum, i) => sum + i.price * i.count, 0)
-                .toLocaleString()}{" "}
-              تومان
-            </p>
-            <button onClick={handlePrint} className="btn green" style={{ marginTop: "10px" }}>
-              چاپ فیش
-            </button>
-          </div>
-        ) : selectedTableId ? (
+        {selectedTableId ? (
           <>
-            <p>برای میز {selectedTableId} هنوز سفارشی ثبت نشده است.</p>
-            <button onClick={handleCreateOrder} className="btn blue">
-              ایجاد سفارش تستی
-            </button>
+            <p>میز انتخاب‌شده: {selectedTableId}</p>
+
+            <div className="product-form">
+              <input
+                type="text"
+                placeholder="جستجوی محصول..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+
+              {filteredProducts.length > 0 && (
+                <ul className="product-list">
+                  {filteredProducts.map((p, idx) => (
+                    <li
+                      key={idx}
+                      onClick={() => setSelectedProduct(p)}
+                      style={{
+                        cursor: "pointer",
+                        fontWeight: selectedProduct?.name === p.name ? "bold" : "normal",
+                      }}
+                    >
+                      {p.name} - {p.price.toLocaleString()} تومان
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {selectedProduct && (
+                <div className="product-entry">
+                  <p>محصول انتخاب‌شده: {selectedProduct.name}</p>
+                  <input
+                    type="number"
+                    min={1}
+                    value={count}
+                    onChange={(e) => setCount(Number(e.target.value))}
+                    placeholder="تعداد"
+                  />
+                  <button onClick={handleAddItemToOrder} className="btn green">
+                    افزودن به سفارش
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {selectedOrder && selectedOrder.items.length > 0 && (
+              <div className="receipt-preview" style={{ fontFamily: "Tahoma", fontSize: "12px", lineHeight: 1.3 }}>
+                <hr />
+                {selectedOrder.items.map((item, idx) => (
+                  <p key={idx}>
+                    {item.name} - {item.count} × {item.price.toLocaleString()} تومان
+                  </p>
+                ))}
+                <hr />
+                <p>
+                  مجموع:{" "}
+                  {selectedOrder.items
+                    .reduce((sum, i) => sum + i.price * i.count, 0)
+                    .toLocaleString()}{" "}
+                  تومان
+                </p>
+              </div>
+            )}
           </>
         ) : (
-          <p>هیچ میز انتخاب نشده است.</p>
+          <p>لطفاً یک میز انتخاب کنید.</p>
         )}
       </div>
     </div>
