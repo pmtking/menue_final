@@ -47,7 +47,7 @@ const OrderAdmin: React.FC = () => {
   }));
 
   const filteredProducts = products.filter((p) =>
-    p.name.includes(searchTerm.trim())
+    p.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
   const selectedOrder = selectedTableId ? orders.get(selectedTableId) || null : null;
@@ -60,25 +60,50 @@ const OrderAdmin: React.FC = () => {
       items: [],
     };
 
-    const newItem: OrderItem = {
-      name: selectedProduct.name,
-      count,
-      price: selectedProduct.price,
-    };
+    const existingIndex = currentOrder.items.findIndex(
+      (item) => item.name === selectedProduct.name
+    );
+
+    const updatedItems = [...currentOrder.items];
+
+    if (existingIndex !== -1) {
+      updatedItems[existingIndex].count += count;
+    } else {
+      updatedItems.push({
+        name: selectedProduct.name,
+        count,
+        price: selectedProduct.price,
+      });
+    }
 
     const updatedOrder: OrderData = {
       ...currentOrder,
-      items: [...currentOrder.items, newItem],
+      items: updatedItems,
     };
 
     const updatedOrders = new Map(orders);
     updatedOrders.set(selectedTableId, updatedOrder);
     setOrders(updatedOrders);
 
-    // Reset form
     setSelectedProduct(null);
     setCount(1);
     setSearchTerm("");
+  };
+
+  const handleRemoveItem = (index: number) => {
+    if (!selectedTableId || !selectedOrder) return;
+
+    const updatedItems = [...selectedOrder.items];
+    updatedItems.splice(index, 1);
+
+    const updatedOrder: OrderData = {
+      ...selectedOrder,
+      items: updatedItems,
+    };
+
+    const updatedOrders = new Map(orders);
+    updatedOrders.set(selectedTableId, updatedOrder);
+    setOrders(updatedOrders);
   };
 
   return (
@@ -116,10 +141,7 @@ const OrderAdmin: React.FC = () => {
                     <li
                       key={idx}
                       onClick={() => setSelectedProduct(p)}
-                      style={{
-                        cursor: "pointer",
-                        fontWeight: selectedProduct?.name === p.name ? "bold" : "normal",
-                      }}
+                      className={selectedProduct?.name === p.name ? "selected" : ""}
                     >
                       {p.name} - {p.price.toLocaleString()} تومان
                     </li>
@@ -145,15 +167,17 @@ const OrderAdmin: React.FC = () => {
             </div>
 
             {selectedOrder && selectedOrder.items.length > 0 && (
-              <div className="receipt-preview" style={{ fontFamily: "Tahoma", fontSize: "12px", lineHeight: 1.3 }}>
+              <div className="receipt-preview">
                 <hr />
                 {selectedOrder.items.map((item, idx) => (
-                  <p key={idx}>
-                    {item.name} - {item.count} × {item.price.toLocaleString()} تومان
-                  </p>
+                  <div key={idx} className="order-item">
+                    <span>{item.name}</span>
+                    <span>{item.count} × {item.price.toLocaleString()} تومان</span>
+                    <button onClick={() => handleRemoveItem(idx)} className="btn delete">✖</button>
+                  </div>
                 ))}
                 <hr />
-                <p>
+                <p className="total">
                   مجموع:{" "}
                   {selectedOrder.items
                     .reduce((sum, i) => sum + i.price * i.count, 0)
