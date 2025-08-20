@@ -28,7 +28,7 @@ const NavBar = () => {
   return (
     <div
       ref={navbarRef}
-      className="navbar fixed bottom-2 left-1/2 -translate-x-1/2 flex justify-between items-center w-[95%] max-w-3xl text-white bg-[#181818] rounded-full shadow-lg px-4 py-2 sm:px-6 sm:py-3"
+      className="navbar fixed bottom-2 inset-x-0 mx-auto flex justify-between items-center w-[95%] max-w-3xl text-white bg-[#181818] rounded-lg shadow-lg px-4 py-2 sm:px-6 sm:py-3"
     >
       {/* Nav Items */}
       <div className="flex mx-auto justify-center gap-10 ">

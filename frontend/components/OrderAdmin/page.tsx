@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./style.scss";
 import TabelCard from "../TabelCard/page";
+import api from "@/libs/axios";
 
 interface Product {
   name: string;
@@ -26,31 +27,48 @@ interface TableInfo {
   status: TableStatus;
 }
 
-const products: Product[] = [
-  { name: "کباب", price: 120000 },
-  { name: "نوشابه", price: 15000 },
-  { name: "برنج", price: 40000 },
-  { name: "سالاد", price: 25000 },
-  { name: "دوغ", price: 18000 },
-];
-
 const OrderAdmin: React.FC = () => {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [tables, setTables] = useState<TableInfo[]>(
+    Array.from({ length: 17 }, (_, i) => ({
+      id: i + 1,
+      status: "empty",
+    }))
+  );
   const [selectedTableId, setSelectedTableId] = useState<number | null>(null);
   const [orders, setOrders] = useState<Map<number, OrderData>>(new Map());
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [count, setCount] = useState<number>(1);
 
-  const tables: TableInfo[] = Array.from({ length: 17 }, (_, i) => ({
-    id: i + 1,
-    status: ["empty", "occupied", "reserved"][i % 3] as TableStatus,
-  }));
+  const showProduct = async () => {
+    try {
+      const {data} = await api.get('/api/product/show')
+      if(data) {
+        setProducts(data.data)
+      }
+    } catch (error) {
+      
+    }
+  }
+
+useEffect(() => {
+ showProduct()
+}, []);
 
   const filteredProducts = products.filter((p) =>
     p.name.toLowerCase().includes(searchTerm.trim().toLowerCase())
   );
 
-  const selectedOrder = selectedTableId ? orders.get(selectedTableId) || null : null;
+  const selectedOrder = selectedTableId
+    ? orders.get(selectedTableId) || null
+    : null;
+
+  const updateTableStatus = (id: number, status: TableStatus) => {
+    setTables((prev) =>
+      prev.map((table) => (table.id === id ? { ...table, status } : table))
+    );
+  };
 
   const handleAddItemToOrder = () => {
     if (!selectedTableId || !selectedProduct || count < 1) return;
@@ -85,6 +103,8 @@ const OrderAdmin: React.FC = () => {
     updatedOrders.set(selectedTableId, updatedOrder);
     setOrders(updatedOrders);
 
+    updateTableStatus(selectedTableId, "occupied");
+
     setSelectedProduct(null);
     setCount(1);
     setSearchTerm("");
@@ -104,6 +124,16 @@ const OrderAdmin: React.FC = () => {
     const updatedOrders = new Map(orders);
     updatedOrders.set(selectedTableId, updatedOrder);
     setOrders(updatedOrders);
+  };
+
+  const handleClearOrder = () => {
+    if (!selectedTableId) return;
+
+    const updatedOrders = new Map(orders);
+    updatedOrders.delete(selectedTableId);
+    setOrders(updatedOrders);
+
+    updateTableStatus(selectedTableId, "empty");
   };
 
   return (
@@ -141,7 +171,9 @@ const OrderAdmin: React.FC = () => {
                     <li
                       key={idx}
                       onClick={() => setSelectedProduct(p)}
-                      className={selectedProduct?.name === p.name ? "selected" : ""}
+                      className={
+                        selectedProduct?.name === p.name ? "selected" : ""
+                      }
                     >
                       {p.name} - {p.price.toLocaleString()} تومان
                     </li>
@@ -172,8 +204,15 @@ const OrderAdmin: React.FC = () => {
                 {selectedOrder.items.map((item, idx) => (
                   <div key={idx} className="order-item">
                     <span>{item.name}</span>
-                    <span>{item.count} × {item.price.toLocaleString()} تومان</span>
-                    <button onClick={() => handleRemoveItem(idx)} className=" delete">✖</button>
+                    <span>
+                      {item.count} × {item.price.toLocaleString()} تومان
+                    </span>
+                    <button
+                      onClick={() => handleRemoveItem(idx)}
+                      className="delete"
+                    >
+                      ✖
+                    </button>
                   </div>
                 ))}
                 <hr />
@@ -184,6 +223,9 @@ const OrderAdmin: React.FC = () => {
                     .toLocaleString()}{" "}
                   تومان
                 </p>
+                <button onClick={handleClearOrder} className="btn blue">
+                  تسویه حساب و خالی کردن میز
+                </button>
               </div>
             )}
           </>
