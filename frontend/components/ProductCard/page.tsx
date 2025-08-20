@@ -7,7 +7,7 @@ const ProductCard = ({ product, onDelete, onEdite }: any) => {
     <>
       <div className="relative rounded-lg border shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 group">
         <Image
-          src={`http://localhost:8080${product.imagePath}`}
+          src={`http://171.22.26.36:8080/${product.imagePath}`}
           alt={product.name}
           className="w-full h-48 object-cover"
           width={100}

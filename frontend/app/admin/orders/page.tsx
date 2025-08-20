@@ -1,4 +1,5 @@
 import LiveClock from "@/components/LiveClock/page";
+import OrderAdmin from "@/components/OrderAdmin/page";
 import { ArchiveTick, TimerPause } from "iconsax-reactjs";
 
 const OrderPage = () => {
@@ -14,7 +15,9 @@ const OrderPage = () => {
             <ArchiveTick />
           </div>
         </div>
-            
+            <div className="flex">
+                <OrderAdmin />
+            </div>
       </main>
     </>
   );

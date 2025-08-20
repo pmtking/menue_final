@@ -3,9 +3,9 @@ import dotenv from "dotenv";
 import { dotenvConfig } from "./config/dotenv";
 dotenvConfig();
 export const mongoConnected = () => {
-    
+// mongodb://mongo:27017/menue
   mongoose
-    .connect(process.env.MONGO_URI! || 'mongodb://mongo:27017/menue')
+    .connect(process.env.MONGO_URI! || 'mongodb://localhost:27017')
     .then(() => {
       console.log("✅ mongoo is connected ");
     })

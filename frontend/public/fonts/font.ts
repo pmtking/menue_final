@@ -1,0 +1,1 @@
+export const vazirFont = "data:font/truetype;base64,AAEAAAALAIAAA..."; 
